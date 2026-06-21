@@ -47,7 +47,7 @@ async function appendToSheet(token, sheetId, values) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { seat, slot, name, id } = req.body;
+  const { seat, slot, name, id, from, to, amount, paymentId } = req.body;
   const date = new Date().toLocaleDateString('en-IN', {
     day: '2-digit', month: '2-digit', year: 'numeric',
   });
@@ -78,12 +78,24 @@ export default async function handler(req, res) {
                 <td style="padding:10px 16px;font-weight:700;color:#1e293b">${slot}</td>
               </tr>
               <tr style="background:#eff6ff">
+                <td style="padding:10px 16px;color:#64748b;font-size:13px">From → To</td>
+                <td style="padding:10px 16px;font-weight:700;color:#1e293b">${from || date} → ${to || date}</td>
+              </tr>
+              <tr>
                 <td style="padding:10px 16px;color:#64748b;font-size:13px">Name</td>
                 <td style="padding:10px 16px;font-weight:700;color:#1e293b">${name}</td>
               </tr>
-              <tr>
+              <tr style="background:#eff6ff">
                 <td style="padding:10px 16px;color:#64748b;font-size:13px">Student / Staff ID</td>
                 <td style="padding:10px 16px;font-weight:700;color:#1e293b">${id}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 16px;color:#64748b;font-size:13px">Amount Paid</td>
+                <td style="padding:10px 16px;font-weight:700;color:#16a34a">${amount ? '₹' + amount : '—'}</td>
+              </tr>
+              <tr style="background:#eff6ff">
+                <td style="padding:10px 16px;color:#64748b;font-size:13px">Payment ID</td>
+                <td style="padding:10px 16px;font-weight:700;color:#1e293b">${paymentId || '—'}</td>
               </tr>
             </table>
           </div>
@@ -99,7 +111,7 @@ export default async function handler(req, res) {
   try {
     const serviceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
     const token = await getGoogleAccessToken(serviceAccount);
-    await appendToSheet(token, process.env.SHEET_ID, [date, slot, seat, name, id]);
+    await appendToSheet(token, process.env.SHEET_ID, [date, from || date, to || date, slot, seat, name, id, amount ? `₹${amount}` : '—', paymentId || '—']);
   } catch (e) {
     console.error('Sheets failed:', e.message);
   }

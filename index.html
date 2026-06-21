@@ -19,12 +19,9 @@
   <main>
     <!-- Controls Bar -->
     <section class="controls-bar">
-      <!-- Row 1: Slot + Date -->
+      <!-- Row 1: Date -->
       <div class="controls-row">
-        <div class="control-group">
-          <label for="slotSelect">Time Slot</label>
-          <select id="slotSelect"></select>
-        </div>
+        <select id="slotSelect" style="display:none"></select>
         <div class="control-group">
           <label for="fromDate">From</label>
           <input type="date" id="fromDate" />
@@ -37,11 +34,11 @@
       <!-- Row 2: Pass type -->
       <div class="pass-row">
         <span class="pass-label">Pass</span>
-        <button class="pass-btn active" data-pass="1d">1 Day</button>
-        <button class="pass-btn" data-pass="1m">1 Month</button>
-        <button class="pass-btn" data-pass="3m">3 Months</button>
-        <button class="pass-btn" data-pass="6m">6 Months</button>
-        <button class="pass-btn" data-pass="1y">1 Year</button>
+        <button class="pass-btn active" data-pass="1d">1 Day<span class="pass-price">₹100</span></button>
+        <button class="pass-btn" data-pass="1m">1 Month<span class="pass-price">₹1,500</span></button>
+        <button class="pass-btn" data-pass="3m">3 Months<span class="pass-price">₹3,000</span></button>
+        <button class="pass-btn" data-pass="6m">6 Months<span class="pass-price">₹4,800</span></button>
+        <button class="pass-btn" data-pass="1y">1 Year<span class="pass-price">₹8,400</span></button>
       </div>
       <!-- Legend -->
       <div class="legend">
@@ -59,7 +56,6 @@
     <section class="stats-bar">
       <span id="statsAvail">50 available</span>
       <span id="statsBooked">0 booked</span>
-      <button class="btn-export" id="btnExport">⬇ Export to Excel</button>
     </section>
   </main>
 
@@ -70,7 +66,7 @@
       <h2 id="modalTitle">Book Seat</h2>
       <p id="modalSlotLabel" class="modal-slot-label"></p>
 
-      <!-- Book form -->
+      <!-- Step 1: Details form -->
       <div id="bookForm">
         <label>Your Name
           <input type="text" id="inputName" placeholder="e.g. Vinay Singh" maxlength="40" />
@@ -79,7 +75,20 @@
           <input type="text" id="inputId" placeholder="e.g. LIB-2024-001" maxlength="20" />
         </label>
         <p class="error hidden" id="formError">Please fill in both fields.</p>
-        <button class="btn-book" id="btnConfirm">Confirm Booking</button>
+        <button class="btn-book" id="btnConfirm">Proceed to Payment →</button>
+      </div>
+
+      <!-- Step 2: QR Payment -->
+      <div id="paymentStep" class="hidden">
+        <div class="payment-amount" id="paymentAmount"></div>
+        <div class="qr-wrap">
+          <img id="qrImage" src="qr.png" alt="UPI QR Code" />
+        </div>
+        <p class="qr-hint">Scan with any UPI app (GPay, PhonePe, Paytm…)</p>
+        <div class="payment-btns">
+          <button class="btn-back" id="btnBack">← Back</button>
+          <button class="btn-book" id="btnPaid">I've Paid ✓</button>
+        </div>
       </div>
 
       <!-- Already booked view -->

@@ -134,6 +134,13 @@ main {
   border-color: var(--primary);
   color: #fff;
 }
+.pass-price {
+  display: block;
+  font-size: .72rem;
+  font-weight: 700;
+  opacity: .75;
+  margin-top: 1px;
+}
 
 .legend {
   display: flex;
@@ -293,6 +300,52 @@ main {
   transition: background .15s;
 }
 .btn-book:hover { background: var(--primary-dark); }
+
+/* Payment step */
+#paymentStep.hidden { display: none; }
+.payment-amount {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.payment-amount strong { color: var(--text); font-size: 1.15rem; }
+.qr-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.qr-wrap img {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  object-fit: contain;
+  background: #fff;
+}
+.qr-hint {
+  text-align: center;
+  font-size: .8rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.payment-btns {
+  display: flex;
+  gap: 10px;
+}
+.btn-back {
+  flex: 1;
+  padding: 11px;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.btn-back:hover { border-color: var(--text); color: var(--text); }
+#btnPaid { flex: 2; }
 
 /* Booked view */
 #bookedView.hidden { display: none; }

@@ -12,12 +12,14 @@ const SLOTS = [
 ];
 
 const PASSES = [
-  { label: '1 Day',    key: '1d' },
-  { label: '1 Month',  key: '1m' },
-  { label: '3 Months', key: '3m' },
-  { label: '6 Months', key: '6m' },
-  { label: '1 Year',   key: '1y' },
+  { label: '1 Day',    key: '1d', price: 100  },
+  { label: '1 Month',  key: '1m', price: 1500 },
+  { label: '3 Months', key: '3m', price: 3000 },
+  { label: '6 Months', key: '6m', price: 4800 },
+  { label: '1 Year',   key: '1y', price: 8400 },
 ];
+
+const PASS_PRICE = Object.fromEntries(PASSES.map(p => [p.key, p.price]));
 
 const STORAGE_KEY = 'library_bookings_v2';
 
@@ -68,12 +70,16 @@ const modalTitle   = document.getElementById('modalTitle');
 const modalSlotLbl = document.getElementById('modalSlotLabel');
 const modalClose   = document.getElementById('modalClose');
 const bookForm     = document.getElementById('bookForm');
+const paymentStep  = document.getElementById('paymentStep');
 const bookedView   = document.getElementById('bookedView');
 const inputName    = document.getElementById('inputName');
 const inputId      = document.getElementById('inputId');
 const formError    = document.getElementById('formError');
 const btnConfirm   = document.getElementById('btnConfirm');
+const btnBack      = document.getElementById('btnBack');
+const btnPaid      = document.getElementById('btnPaid');
 const btnCancel    = document.getElementById('btnCancel');
+const paymentAmount = document.getElementById('paymentAmount');
 const viewName     = document.getElementById('viewName');
 const viewId       = document.getElementById('viewId');
 const viewSeat     = document.getElementById('viewSeat');
@@ -112,10 +118,11 @@ function init() {
     });
   });
 
-  document.getElementById('btnExport').addEventListener('click', exportToExcel);
   modalClose.addEventListener('click', closeModal);
   modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
-  btnConfirm.addEventListener('click', confirmBooking);
+  btnConfirm.addEventListener('click', showPaymentStep);
+  btnBack.addEventListener('click', showBookForm);
+  btnPaid.addEventListener('click', confirmBooking);
   btnCancel.addEventListener('click', cancelBooking);
 
   renderGrid();
@@ -163,11 +170,29 @@ function renderGrid() {
 }
 
 // ── Modal ─────────────────────────────────────────────────
+function showBookForm() {
+  bookForm.classList.remove('hidden');
+  paymentStep.classList.add('hidden');
+}
+
+function showPaymentStep() {
+  const name = inputName.value.trim();
+  const id   = inputId.value.trim();
+  if (!name || !id) { formError.classList.remove('hidden'); return; }
+  formError.classList.add('hidden');
+  const price = PASS_PRICE[currentPass];
+  const passLabel = PASSES.find(p => p.key === currentPass).label;
+  paymentAmount.innerHTML = `Pay <strong>₹${price.toLocaleString('en-IN')}</strong> for <strong>${passLabel}</strong> pass`;
+  bookForm.classList.add('hidden');
+  paymentStep.classList.remove('hidden');
+}
+
 function openModal(seat, existingBooking) {
   selectedSeat = seat;
   modalTitle.textContent   = `Seat ${seat}`;
   modalSlotLbl.textContent = currentSlot;
   formError.classList.add('hidden');
+  paymentStep.classList.add('hidden');
 
   if (existingBooking) {
     bookForm.classList.add('hidden');
@@ -194,30 +219,24 @@ function closeModal() {
   selectedSeat = null;
 }
 
-async function confirmBooking() {
-  const name = inputName.value.trim();
-  const id   = inputId.value.trim();
-  if (!name || !id) { formError.classList.remove('hidden'); return; }
-
-  btnConfirm.disabled = true;
-  btnConfirm.textContent = 'Booking…';
-
-  const from = fromInput.value;
-  const to   = calcToDate(from, currentPass);
+function confirmBooking() {
+  const name   = inputName.value.trim();
+  const id     = inputId.value.trim();
+  const from   = fromInput.value;
+  const to     = calcToDate(from, currentPass);
+  const amount = PASS_PRICE[currentPass];
 
   if (!bookings[currentSlot]) bookings[currentSlot] = {};
   if (!bookings[currentSlot][selectedSeat]) bookings[currentSlot][selectedSeat] = [];
-  bookings[currentSlot][selectedSeat].push({ name, id, from, to });
+  bookings[currentSlot][selectedSeat].push({ name, id, from, to, amount });
   saveBookings(bookings);
 
   fetch('/api/book', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ seat: selectedSeat, slot: currentSlot, name, id, from, to }),
+    body: JSON.stringify({ seat: selectedSeat, slot: currentSlot, name, id, from, to, amount }),
   }).catch(() => {});
 
-  btnConfirm.disabled = false;
-  btnConfirm.textContent = 'Confirm Booking';
   closeModal();
   renderGrid();
 }
