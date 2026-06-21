@@ -131,14 +131,27 @@ function closeModal() {
   selectedSeat = null;
 }
 
-function confirmBooking() {
+async function confirmBooking() {
   const name = inputName.value.trim();
   const id   = inputId.value.trim();
   if (!name || !id) { formError.classList.remove('hidden'); return; }
 
+  btnConfirm.disabled = true;
+  btnConfirm.textContent = 'Booking…';
+
   if (!bookings[currentSlot]) bookings[currentSlot] = {};
   bookings[currentSlot][selectedSeat] = { name, id };
   saveBookings(bookings);
+
+  // Notify backend (email + Google Sheet) — fire and forget, don't block UI
+  fetch('/api/book', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ seat: selectedSeat, slot: currentSlot, name, id }),
+  }).catch(() => {});
+
+  btnConfirm.disabled = false;
+  btnConfirm.textContent = 'Confirm Booking';
   closeModal();
   renderGrid();
 }
