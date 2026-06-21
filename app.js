@@ -63,6 +63,7 @@ function init() {
     renderGrid();
   });
 
+  document.getElementById('btnExport').addEventListener('click', exportToExcel);
   modalClose.addEventListener('click', closeModal);
   modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
   btnConfirm.addEventListener('click', confirmBooking);
@@ -147,6 +148,31 @@ function cancelBooking() {
   saveBookings(bookings);
   closeModal();
   renderGrid();
+}
+
+function exportToExcel() {
+  const rows = [['Date', 'Time Slot', 'Seat', 'Name', 'Student/Staff ID']];
+  const today = new Date().toLocaleDateString('en-IN');
+
+  SLOTS.forEach(slot => {
+    const slotData = bookings[slot] || {};
+    SEATS.forEach(seat => {
+      if (slotData[seat]) {
+        rows.push([today, slot, seat, slotData[seat].name, slotData[seat].id]);
+      }
+    });
+  });
+
+  if (rows.length === 1) {
+    alert('No bookings to export yet.');
+    return;
+  }
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [14, 26, 6, 20, 16].map(w => ({ wch: w }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Bookings');
+  XLSX.writeFile(wb, `library-bookings-${today.replace(/\//g, '-')}.xlsx`);
 }
 
 init();

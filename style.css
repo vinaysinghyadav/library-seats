@@ -140,6 +140,19 @@ main {
 }
 #statsAvail { color: var(--available); font-weight: 600; }
 #statsBooked { color: var(--booked); font-weight: 600; }
+.btn-export {
+  margin-left: auto;
+  padding: 6px 14px;
+  background: #fff;
+  border: 1.5px solid var(--primary);
+  color: var(--primary);
+  border-radius: 7px;
+  font-size: .83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.btn-export:hover { background: var(--primary); color: #fff; }
 
 /* Modal */
 .modal-overlay {
