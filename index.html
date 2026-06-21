@@ -17,14 +17,36 @@
   </header>
 
   <main>
-    <!-- Slot Selector -->
-    <section class="slot-bar">
-      <label for="slotSelect">Time Slot:</label>
-      <select id="slotSelect"></select>
+    <!-- Controls Bar -->
+    <section class="controls-bar">
+      <!-- Row 1: Slot + Date -->
+      <div class="controls-row">
+        <div class="control-group">
+          <label for="slotSelect">Time Slot</label>
+          <select id="slotSelect"></select>
+        </div>
+        <div class="control-group">
+          <label for="fromDate">From</label>
+          <input type="date" id="fromDate" />
+        </div>
+        <div class="control-group to-group">
+          <label>To</label>
+          <span id="toDisplay" class="to-display">—</span>
+        </div>
+      </div>
+      <!-- Row 2: Pass type -->
+      <div class="pass-row">
+        <span class="pass-label">Pass</span>
+        <button class="pass-btn active" data-pass="1d">1 Day</button>
+        <button class="pass-btn" data-pass="1m">1 Month</button>
+        <button class="pass-btn" data-pass="3m">3 Months</button>
+        <button class="pass-btn" data-pass="6m">6 Months</button>
+        <button class="pass-btn" data-pass="1y">1 Year</button>
+      </div>
+      <!-- Legend -->
       <div class="legend">
         <span class="dot available"></span> Available
         <span class="dot booked"></span> Booked
-        <span class="dot mine"></span> Your Booking
       </div>
     </section>
 
@@ -43,7 +65,7 @@
 
   <!-- Booking Modal -->
   <div class="modal-overlay hidden" id="modalOverlay">
-    <div class="modal" id="modal">
+    <div class="modal">
       <button class="modal-close" id="modalClose">✕</button>
       <h2 id="modalTitle">Book Seat</h2>
       <p id="modalSlotLabel" class="modal-slot-label"></p>
@@ -67,6 +89,8 @@
           <div class="booking-row"><span>ID</span><strong id="viewId"></strong></div>
           <div class="booking-row"><span>Seat</span><strong id="viewSeat"></strong></div>
           <div class="booking-row"><span>Slot</span><strong id="viewSlot"></strong></div>
+          <div class="booking-row"><span>From</span><strong id="viewFrom"></strong></div>
+          <div class="booking-row"><span>To</span><strong id="viewTo"></strong></div>
         </div>
         <button class="btn-cancel" id="btnCancel">Cancel Booking</button>
       </div>

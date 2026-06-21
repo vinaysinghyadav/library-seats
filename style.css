@@ -51,33 +51,94 @@ main {
   gap: 20px;
 }
 
-/* Slot bar */
-.slot-bar {
+/* Controls bar */
+.controls-bar {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  padding: 16px 20px;
   box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.controls-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
   flex-wrap: wrap;
 }
-.slot-bar label { font-weight: 600; font-size: .9rem; }
-#slotSelect {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 10px;
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.control-group label {
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--muted);
+}
+#slotSelect, #fromDate {
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  padding: 7px 11px;
   font-size: .9rem;
   color: var(--text);
   background: var(--bg);
   cursor: pointer;
+  outline: none;
 }
+#slotSelect:focus, #fromDate:focus { border-color: var(--primary); }
+
+.to-display {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--primary);
+  padding: 7px 0;
+  white-space: nowrap;
+}
+
+/* Pass buttons */
+.pass-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pass-label {
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--muted);
+  margin-right: 4px;
+}
+.pass-btn {
+  padding: 6px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.pass-btn:hover { border-color: var(--primary); color: var(--primary); }
+.pass-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
 .legend {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-left: auto;
   font-size: .82rem;
   color: var(--muted);
 }
@@ -90,7 +151,6 @@ main {
 }
 .dot.available { background: var(--available); }
 .dot.booked    { background: var(--booked); }
-.dot.mine      { background: var(--mine); }
 
 /* Seat section */
 .seat-section {
