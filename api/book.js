@@ -63,7 +63,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from: 'Library Booking <onboarding@resend.dev>',
         to: ['vinayrao.735@gmail.com'],
-        subject: `📚 New Booking — Seat ${seat} | ${slot}`,
+        subject: `📚 New Booking — Seat ${seat}`,
         html: `
           <div style="font-family:sans-serif;max-width:480px;margin:0 auto;background:#f4f6f9;padding:24px;border-radius:12px">
             <h2 style="color:#2563eb;margin-bottom:4px">New Seat Booking</h2>
@@ -74,28 +74,20 @@ export default async function handler(req, res) {
                 <td style="padding:10px 16px;font-weight:700;color:#1e293b">${seat}</td>
               </tr>
               <tr>
-                <td style="padding:10px 16px;color:#64748b;font-size:13px">Time Slot</td>
-                <td style="padding:10px 16px;font-weight:700;color:#1e293b">${slot}</td>
-              </tr>
-              <tr style="background:#eff6ff">
                 <td style="padding:10px 16px;color:#64748b;font-size:13px">From → To</td>
                 <td style="padding:10px 16px;font-weight:700;color:#1e293b">${from || date} → ${to || date}</td>
               </tr>
-              <tr>
+              <tr style="background:#eff6ff">
                 <td style="padding:10px 16px;color:#64748b;font-size:13px">Name</td>
                 <td style="padding:10px 16px;font-weight:700;color:#1e293b">${name}</td>
               </tr>
-              <tr style="background:#eff6ff">
+              <tr>
                 <td style="padding:10px 16px;color:#64748b;font-size:13px">Student / Staff ID</td>
                 <td style="padding:10px 16px;font-weight:700;color:#1e293b">${id}</td>
               </tr>
-              <tr>
+              <tr style="background:#eff6ff">
                 <td style="padding:10px 16px;color:#64748b;font-size:13px">Amount Paid</td>
                 <td style="padding:10px 16px;font-weight:700;color:#16a34a">${amount ? '₹' + amount : '—'}</td>
-              </tr>
-              <tr style="background:#eff6ff">
-                <td style="padding:10px 16px;color:#64748b;font-size:13px">Payment ID</td>
-                <td style="padding:10px 16px;font-weight:700;color:#1e293b">${paymentId || '—'}</td>
               </tr>
             </table>
           </div>
