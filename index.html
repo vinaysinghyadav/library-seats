@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library Seat Booking</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">📚 Library Seat Booking</div>
+      <div class="date-display" id="dateDisplay"></div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Slot Selector -->
+    <section class="slot-bar">
+      <label for="slotSelect">Time Slot:</label>
+      <select id="slotSelect"></select>
+      <div class="legend">
+        <span class="dot available"></span> Available
+        <span class="dot booked"></span> Booked
+        <span class="dot mine"></span> Your Booking
+      </div>
+    </section>
+
+    <!-- Seat Grid -->
+    <section class="seat-section">
+      <div class="seat-grid" id="seatGrid"></div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="stats-bar">
+      <span id="statsAvail">50 available</span>
+      <span id="statsBooked">0 booked</span>
+    </section>
+  </main>
+
+  <!-- Booking Modal -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modalClose">✕</button>
+      <h2 id="modalTitle">Book Seat</h2>
+      <p id="modalSlotLabel" class="modal-slot-label"></p>
+
+      <!-- Book form -->
+      <div id="bookForm">
+        <label>Your Name
+          <input type="text" id="inputName" placeholder="e.g. Vinay Singh" maxlength="40" />
+        </label>
+        <label>Student / Staff ID
+          <input type="text" id="inputId" placeholder="e.g. LIB-2024-001" maxlength="20" />
+        </label>
+        <p class="error hidden" id="formError">Please fill in both fields.</p>
+        <button class="btn-book" id="btnConfirm">Confirm Booking</button>
+      </div>
+
+      <!-- Already booked view -->
+      <div id="bookedView" class="hidden">
+        <div class="booking-card">
+          <div class="booking-row"><span>Name</span><strong id="viewName"></strong></div>
+          <div class="booking-row"><span>ID</span><strong id="viewId"></strong></div>
+          <div class="booking-row"><span>Seat</span><strong id="viewSeat"></strong></div>
+          <div class="booking-row"><span>Slot</span><strong id="viewSlot"></strong></div>
+        </div>
+        <button class="btn-cancel" id="btnCancel">Cancel Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
