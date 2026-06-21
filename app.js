@@ -21,15 +21,11 @@ const PASSES = [
 
 const PASS_PRICE = Object.fromEntries(PASSES.map(p => [p.key, p.price]));
 
-const STORAGE_KEY = 'library_bookings_v2';
+const SUPABASE_URL  = 'https://oiokshmvnqucqfsrjmvk.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2tzaG12bnF1Y3Fmc3JqbXZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNDY0NTMsImV4cCI6MjA5NzYyMjQ1M30.cVa8SDpjvMoR3dE4r0ZhjMnfqSLdIeXY5DBgvfPHt0k';
 
-function loadBookings() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
-}
-function saveBookings(b) { localStorage.setItem(STORAGE_KEY, JSON.stringify(b)); }
-
-// bookings[slot][seat] = [{ name, id, from, to }, ...]
-let bookings = loadBookings();
+// approvedBookings: [{ seat, from_date, to_date, name, student_id }]
+let approvedBookings = [];
 let currentSlot = SLOTS[0];
 let currentPass = '1d';
 let selectedSeat = null;
@@ -88,8 +84,19 @@ const viewFrom     = document.getElementById('viewFrom');
 const viewTo       = document.getElementById('viewTo');
 const dateDisplay  = document.getElementById('dateDisplay');
 
+async function fetchApproved() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/bookings?status=eq.approved&select=seat,from_date,to_date,name,student_id`, {
+      headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
+    });
+    approvedBookings = await res.json();
+  } catch (e) {
+    console.error('Failed to fetch bookings:', e.message);
+  }
+}
+
 // ── Init ──────────────────────────────────────────────────
-function init() {
+async function init() {
   dateDisplay.textContent = new Date().toLocaleDateString('en-IN', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
@@ -125,6 +132,7 @@ function init() {
   btnPaid.addEventListener('click', confirmBooking);
   btnCancel.addEventListener('click', cancelBooking);
 
+  await fetchApproved();
   renderGrid();
 }
 
@@ -140,7 +148,6 @@ function renderGrid() {
   seatGrid.innerHTML = '';
   const fromYMD = fromInput.value;
   const toYMD_  = calcToDate(fromYMD, currentPass);
-  const slotData = bookings[currentSlot] || {};
   let bookedCount = 0;
 
   SEATS.forEach(seat => {
@@ -148,13 +155,14 @@ function renderGrid() {
     btn.className = 'seat';
     btn.textContent = seat;
 
-    const seatBookings = slotData[seat] || [];
-    const conflict = seatBookings.find(b => fromYMD <= b.to && toYMD_ >= b.from);
+    const conflict = approvedBookings.find(b =>
+      b.seat === seat && fromYMD <= b.to_date && toYMD_ >= b.from_date
+    );
 
     if (conflict) {
       bookedCount++;
       btn.classList.add('booked');
-      btn.title = `${seat} — Booked by ${conflict.name} (${fmtDate(conflict.from)} – ${fmtDate(conflict.to)})`;
+      btn.title = `${seat} — Booked by ${conflict.name} (${fmtDate(conflict.from_date)} – ${fmtDate(conflict.to_date)})`;
       btn.addEventListener('click', () => openModal(seat, conflict));
     } else {
       btn.classList.add('available');
@@ -198,11 +206,11 @@ function openModal(seat, existingBooking) {
     bookForm.classList.add('hidden');
     bookedView.classList.remove('hidden');
     viewName.textContent = existingBooking.name;
-    viewId.textContent   = existingBooking.id;
+    viewId.textContent   = existingBooking.student_id;
     viewSeat.textContent = seat;
     viewSlot.textContent = currentSlot;
-    viewFrom.textContent = fmtDate(existingBooking.from);
-    viewTo.textContent   = fmtDate(existingBooking.to);
+    viewFrom.textContent = fmtDate(existingBooking.from_date);
+    viewTo.textContent   = fmtDate(existingBooking.to_date);
   } else {
     bookForm.classList.remove('hidden');
     bookedView.classList.add('hidden');
@@ -226,31 +234,17 @@ function confirmBooking() {
   const to     = calcToDate(from, currentPass);
   const amount = PASS_PRICE[currentPass];
 
-  if (!bookings[currentSlot]) bookings[currentSlot] = {};
-  if (!bookings[currentSlot][selectedSeat]) bookings[currentSlot][selectedSeat] = [];
-  bookings[currentSlot][selectedSeat].push({ name, id, from, to, amount });
-  saveBookings(bookings);
-
   fetch('/api/book', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ seat: selectedSeat, slot: currentSlot, name, id, from, to, amount }),
+    body: JSON.stringify({ seat: selectedSeat, name, id, from, to, amount }),
   }).catch(() => {});
 
   closeModal();
-  renderGrid();
 }
 
 function cancelBooking() {
-  const from = fromInput.value;
-  const to   = calcToDate(from, currentPass);
-  if (bookings[currentSlot]?.[selectedSeat]) {
-    bookings[currentSlot][selectedSeat] = bookings[currentSlot][selectedSeat]
-      .filter(b => !(b.from === from && b.to === to));
-  }
-  saveBookings(bookings);
   closeModal();
-  renderGrid();
 }
 
 function exportToExcel() {
